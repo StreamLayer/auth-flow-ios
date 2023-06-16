@@ -27,11 +27,11 @@ public class SLRProfileFlow {
   }
 
   public func show(from viewController: UIViewController) {
-    guard let userData = try? UserDefaults.standard.get(objectType: AuthUser.self, forKey: "UserData") else {
+    guard profileProvider.user() != nil else {
       return
     }
 
-    let context = ProfileFlowContext(userData: userData, profileProvider: profileProvider)
+    let context = ProfileFlowContext(profileProvider: profileProvider)
     let vc = UIHostingController(rootView: ProfileView(context: context, onProfileEdit: {
       self.openProfileInfo(context: context)
     }, onPrivacyPolicyOpen: {

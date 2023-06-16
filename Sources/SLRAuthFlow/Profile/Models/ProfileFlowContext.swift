@@ -19,11 +19,11 @@ class ProfileFlowContext: ObservableObject {
   private var user: AuthUser
   private var profileProvider: ProfileProvider
 
-  init(userData: AuthUser, profileProvider: ProfileProvider) {
-    self.user = userData
+  init(profileProvider: ProfileProvider) {
+    self.user = profileProvider.user()!
     self.profileProvider = profileProvider
-    self.username = userData.name ?? ""
-    self.avatar = userData.avatar ?? ""
+    self.username = user.name ?? ""
+    self.avatar = user.avatar ?? ""
   }
 
   var avatarImage: UIImage {
@@ -32,33 +32,22 @@ class ProfileFlowContext: ObservableObject {
         .build() ?? UIImage()
   }
 
-  static var mockUser: AuthUser {
-    AuthUser.test()
-  }
-
   @MainActor
   func updateAvatar(to image: UIImage) async {
     avatar = (try? await profileProvider.updateAvatar(to: image)) ?? ""
     user.avatar = avatar
-    saveUser()
   }
 
   func deleteAvatar() {
     avatar = ""
     profileProvider.deleteAvatar()
     user.avatar = avatar
-    saveUser()
   }
 
   func changeNameIfNeeded() async {
     if username != user.username {
       try? await profileProvider.setUserName(username)
       user.name = username
-      saveUser()
     }
-  }
-
-  private func saveUser() {
-    try? UserDefaults.standard.save(user, forKey: "UserData")
   }
 }

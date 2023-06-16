@@ -139,7 +139,7 @@ struct ProfileView: View {
 
 struct ProfileView_Previews: PreviewProvider {
   static var previews: some View {
-    ProfileView(context: ProfileFlowContext(userData: ProfileFlowContext.mockUser, profileProvider: ProfileProviderMock())) {
+    ProfileView(context: ProfileFlowContext(profileProvider: ProfileProviderMock())) {
 
     } onPrivacyPolicyOpen: {
 

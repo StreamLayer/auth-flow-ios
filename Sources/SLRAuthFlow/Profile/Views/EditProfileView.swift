@@ -31,7 +31,7 @@ struct EditProfileView: View {
           userAvatarContainer
             .padding(.top, 30)
             .onTapGesture {
-              showMediaPicker.toggle()
+              showMediaDialog.toggle()
             }
           userName
         }
@@ -47,11 +47,11 @@ struct EditProfileView: View {
         backButton
       }
     }
-    .confirmationDialog("", isPresented: $showMediaDialog, titleVisibility: .visible) {
+    .confirmationDialog("", isPresented: $showMediaDialog, titleVisibility: .hidden) {
       Button("Open Photo") {
         showMediaPicker.toggle()
       }
-      Button("Delete photo") {
+      Button("Delete photo", role: .destructive) {
         context.deleteAvatar()
       }
     }
@@ -146,7 +146,7 @@ struct EditProfileView: View {
 
 struct EditProfileView_Previews: PreviewProvider {
   static var previews: some View {
-    EditProfileView(context: ProfileFlowContext(userData: ProfileFlowContext.mockUser, profileProvider: ProfileProviderMock()), onBack: {
+    EditProfileView(context: ProfileFlowContext(profileProvider: ProfileProviderMock()), onBack: {
 
     })
   }

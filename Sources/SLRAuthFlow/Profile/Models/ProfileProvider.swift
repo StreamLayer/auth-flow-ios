@@ -9,25 +9,33 @@ import Foundation
 import UIKit
 
 public protocol ProfileProvider {
+  func user() -> AuthUser?
   func setUserName(_ name: String) async throws
   func updateAvatar(to image: UIImage) async throws -> String
   func deleteAvatar()
   func logout()
 }
 
-struct ProfileProviderMock: ProfileProvider {
-  func setUserName(_ name: String) async throws {
+public struct ProfileProviderMock: ProfileProvider {
+  
+  public init() {}
+  
+  public func user() -> AuthUser? {
+    return AuthUser.test()
+  }
+  
+  public func setUserName(_ name: String) async throws {
 
   }
 
-  func updateAvatar(to image: UIImage) async throws -> String {
+  public func updateAvatar(to image: UIImage) async throws -> String {
     return ""
   }
 
-  func deleteAvatar() {
+  public func deleteAvatar() {
 
   }
 
-  func logout() {
+  public func logout() {
   }
 }

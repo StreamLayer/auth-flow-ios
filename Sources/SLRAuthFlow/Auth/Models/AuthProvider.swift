@@ -21,6 +21,8 @@ public protocol AuthProvider {
 }
 
 public class AuthProviderMock: AuthProvider {
+  
+  public init() {}
 
   public func requestOTP(phoneNumber: String) async throws {
     print("[AuthProvider] requestOTP(phoneNumber:)")
