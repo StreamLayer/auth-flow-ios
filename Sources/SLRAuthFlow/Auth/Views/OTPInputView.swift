@@ -13,12 +13,11 @@ struct OTPInputView: View {
   @State var navigationPerformed: Bool = false
 
   @ObservedObject var authFlowContext: AuthFlowContext
-  private var navigationHandler: NavigationHander
+  @Environment(\.regularClosure) var onBack
+  @Environment(\.boolClosure) var onNext
 
-  init(authFlowContext: AuthFlowContext,
-       navigationHandler: NavigationHander) {
+  init(authFlowContext: AuthFlowContext) {
     self.authFlowContext = authFlowContext
-    self.navigationHandler = navigationHandler
     UITextField.appearance().keyboardAppearance = .dark
   }
 
@@ -56,7 +55,7 @@ struct OTPInputView: View {
         authFlowContext.state.pinState = .undefined
         self.navigationPerformed = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-          navigationHandler.onNext(!state.shouldShowNameInput)
+          self.onNext?(!state.shouldShowNameInput)
         }
       }
     })
@@ -108,7 +107,7 @@ struct OTPInputView: View {
   var backButton: some View {
     Button {
       authFlowContext.authSent = false
-      navigationHandler.onPrevious()
+      self.onBack?()
     } label: {
       Image("icon_chevron_left", bundle: .module)
     }
@@ -152,7 +151,6 @@ struct OTPInputView: View {
 
 struct OTPInputView_Previews: PreviewProvider {
   static var previews: some View {
-    OTPInputView(authFlowContext: AuthFlowContext.makeDefault(),
-                 navigationHandler: AuthFlowNavigationHandler.makeEmpty())
+    OTPInputView(authFlowContext: AuthFlowContext.makeDefault())
   }
 }

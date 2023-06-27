@@ -7,7 +7,9 @@ public class SLRAuthFlow {
     static let otpCodeLength = 4
     static let countdownTimerSeconds = 60
   }
-
+  
+  private var handlers: [NavigationHander] = []
+  
   // Instance Properties
   private var completionHandler: ((Error?) -> Void)?
   private weak var fromViewController: UIViewController?
@@ -20,12 +22,12 @@ public class SLRAuthFlow {
     navVC.navigationBar.isTranslucent = false
     return navVC
   }()
-
+  
   // Initializer
   public init(authProvider: AuthProvider) {
     self.authProvider = authProvider
   }
-
+  
   // Public Methods
   /// Show authentication flow from a view controller.
   public func show(from viewController: UIViewController, completion: @escaping (Error?) -> Void) {
@@ -33,47 +35,53 @@ public class SLRAuthFlow {
     let authContext = AuthFlowContext(otpCodeLength: Constants.otpCodeLength,
                                       countdownTimerSeconds: Constants.countdownTimerSeconds,
                                       authProvider: authProvider)
-
-    let navigationHandler = AuthFlowNavigationHandler { _ in
+    
+    let onNext: BoolClosure = { _ in
       self.showOTP(authInput: authContext)
-    } onPreviousAction: {
+    }
+    
+    let onBack: RegularClosure = {
       viewController.dismiss(animated: true)
     }
-
-    let vc = UIHostingController(rootView: PhoneInputView(authFlowContext: authContext, navigationHandler: navigationHandler))
+    
+    let vc = UIHostingController(rootView: PhoneInputView(authFlowContext: authContext).environment(\.regularClosure, onBack).environment(\.boolClosure, onNext))
     navigationController.setViewControllers([vc], animated: false)
     fromViewController = viewController
     viewController.present(navigationController, animated: true)
   }
-
+  
   // Private Methods
   private func showOTP(authInput: AuthFlowContext) {
-    let navigationHandler = AuthFlowNavigationHandler { shouldClose in
+    let onNext: BoolClosure = { shouldClose in
       if shouldClose {
         self.fromViewController?.presentedViewController?.dismiss(animated: true)
         self.completionHandler?(nil)
       } else {
         self.showNameInput(authInput: authInput)
       }
-    } onPreviousAction: {
+    }
+    
+    let onBack: RegularClosure = {
       self.navigationController.popViewController(animated: true)
     }
-
-    let vc = UIHostingController(rootView: OTPInputView(authFlowContext: authInput, navigationHandler: navigationHandler))
+    
+    let vc = UIHostingController(rootView: OTPInputView(authFlowContext: authInput).environment(\.regularClosure, onBack).environment(\.boolClosure, onNext))
     navigationController.pushViewController(vc, animated: true)
   }
-
+  
   private func showNameInput(authInput: AuthFlowContext) {
-    let navigationHandler = AuthFlowNavigationHandler { shouldClose in
+    let onNext: BoolClosure = { shouldClose in
       if shouldClose {
         self.fromViewController?.presentedViewController?.dismiss(animated: true)
         self.completionHandler?(nil)
       }
-    } onPreviousAction: {
+    }
+    
+    let onBack: RegularClosure = {
       self.fromViewController?.presentedViewController?.dismiss(animated: true)
     }
-
-    let vc = UIHostingController(rootView: NameInputView(authFlowContext: authInput, navigationHandler: navigationHandler))
+    
+    let vc = UIHostingController(rootView: NameInputView(authFlowContext: authInput).environment(\.regularClosure, onBack).environment(\.boolClosure, onNext))
     navigationController.pushViewController(vc, animated: true)
   }
 }

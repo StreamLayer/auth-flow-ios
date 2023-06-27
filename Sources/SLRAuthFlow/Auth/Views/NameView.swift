@@ -12,11 +12,11 @@ struct NameInputView: View {
 
   @FocusState private var nameFieldIsFocused: Bool
   @ObservedObject var authFlowContext: AuthFlowContext
-  private var navigationHandler: NavigationHander
+  @Environment(\.regularClosure) var onBack
+  @Environment(\.boolClosure) var onNext
 
-  init(authFlowContext: AuthFlowContext, navigationHandler: NavigationHander) {
+  init(authFlowContext: AuthFlowContext) {
     self.authFlowContext = authFlowContext
-    self.navigationHandler = navigationHandler
     self.nameFieldIsFocused = true
     UITextField.appearance().keyboardAppearance = .dark
   }
@@ -110,7 +110,7 @@ struct NameInputView: View {
       Task {
         await self.authFlowContext.sendUpdatedName()
         await MainActor.run {
-          navigationHandler.onNext(true)
+          self.onNext?(true)
         }
       }
     }
@@ -120,7 +120,7 @@ struct NameInputView: View {
 
   var backButton: some View {
     Button {
-      navigationHandler.onPrevious()
+      self.onBack?()
     } label: {
       Image("icon_chevron_left", bundle: .module)
     }
@@ -130,7 +130,6 @@ struct NameInputView: View {
 
 struct NameInputView_Previews: PreviewProvider {
   static var previews: some View {
-    NameInputView(authFlowContext: AuthFlowContext.makeDefault(),
-                  navigationHandler: AuthFlowNavigationHandler.makeEmpty())
+    NameInputView(authFlowContext: AuthFlowContext.makeDefault())
   }
 }

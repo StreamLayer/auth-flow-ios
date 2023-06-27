@@ -65,7 +65,7 @@ class AuthFlowContext: ObservableObject {
     self.countdownTimerSeconds = countdownTimerSeconds
     self.authProvider = authProvider
 
-    $pin.removeDuplicates().sink { pin in
+    $pin.removeDuplicates().sink { [unowned self] pin in
       Task {
         await self.sendCodeIfNeeded(pin: pin)
       }

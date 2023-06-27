@@ -14,12 +14,11 @@ struct PhoneInputView: View {
   @State private var phoneNumberInput: String = ""
 
   @ObservedObject var authFlowContext: AuthFlowContext
-  private var navigationHandler: NavigationHander
+  @Environment(\.regularClosure) var onBack
+  @Environment(\.boolClosure) var onNext
 
-  init(authFlowContext: AuthFlowContext,
-       navigationHandler: NavigationHander) {
+  init(authFlowContext: AuthFlowContext) {
     self.authFlowContext = authFlowContext
-    self.navigationHandler = navigationHandler
     UINavigationBar.appearance().largeTitleTextAttributes = [.foregroundColor: UIColor.white]
     UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor.white]
     UITextField.appearance().keyboardAppearance = .dark
@@ -88,7 +87,7 @@ struct PhoneInputView: View {
 
   var backButton: some View {
     Button {
-      navigationHandler.onPrevious()
+      self.onBack?()
     } label: {
       Image("icon_chevron_left", bundle: .module)
     }
@@ -116,7 +115,7 @@ struct PhoneInputView: View {
       Task {
         await self.authFlowContext.requestOTP()
         await MainActor.run {
-          navigationHandler.onNext(false)
+          self.onNext?(false)
         }
       }
     }
@@ -135,7 +134,7 @@ struct PhoneInputView: View {
       Task {
         await self.authFlowContext.requestOTP()
         await MainActor.run {
-          navigationHandler.onNext(false)
+          self.onNext?(false)
         }
       }
     }
@@ -147,7 +146,6 @@ struct PhoneInputView: View {
 
 struct PhoneInputView_Previews: PreviewProvider {
   static var previews: some View {
-    PhoneInputView(authFlowContext: AuthFlowContext.makeDefault(),
-                   navigationHandler: AuthFlowNavigationHandler.makeEmpty())
+    PhoneInputView(authFlowContext: AuthFlowContext.makeDefault())
   }
 }
