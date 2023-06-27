@@ -29,6 +29,6 @@ public class AuthUser: Codable {
   public var isNameEmpty: Bool {
     let alias = self.alias ?? ""
     let name = self.name ?? ""
-    return alias.isEmpty && name.isEmpty && username.isEmpty
+    return alias.isEmpty && name.isEmpty
   }
 }
