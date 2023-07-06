@@ -7,13 +7,12 @@
 
 import Foundation
 import SwiftUI
-import ExyteMediaPicker
 
 struct EditProfileView: View {
 
   @State var showMediaPicker: Bool = false
   @State var showMediaDialog: Bool = false
-
+  @State var sourceType: UIImagePickerController.SourceType = .photoLibrary
   @ObservedObject private var context: ProfileFlowContext
   private var onBack: () -> Void
 
@@ -49,6 +48,11 @@ struct EditProfileView: View {
     }
     .confirmationDialog("", isPresented: $showMediaDialog, titleVisibility: .hidden) {
       Button("Open Photo") {
+        self.sourceType = .photoLibrary
+        showMediaPicker.toggle()
+      }
+      Button("Take Photo") {
+        self.sourceType = .camera
         showMediaPicker.toggle()
       }
       Button("Delete photo", role: .destructive) {
@@ -56,31 +60,7 @@ struct EditProfileView: View {
       }
     }
     .sheet(isPresented: $showMediaPicker) {
-      MediaPicker(isPresented: $showMediaPicker) { medias in
-        Task {
-          guard let imageData = await medias.first?.getData(),
-                let image = UIImage(data: imageData) else {
-            return
-          }
-          await context.updateAvatar(to: image)
-        }
-      }
-      .mediaSelectionType(.photo)
-      .mediaSelectionLimit(1)
-      .showLiveCameraCell()
-      .mediaPickerTheme(
-        main: .init(
-          albumSelectionBackground: Color.black,
-          cameraBackground: Color.black,
-          cameraSelectionBackground: Color.black
-        ),
-        selection: .init(
-          emptyTint: .white,
-          emptyBackground: .black.opacity(0.25),
-          selectedTint: Color.white
-        )
-      )
-
+      ImagePicker(sourceType: sourceType, selectedImage: $context.selectedImage)
     }
   }
 

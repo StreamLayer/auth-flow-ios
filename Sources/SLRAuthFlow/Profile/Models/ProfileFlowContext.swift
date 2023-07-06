@@ -15,7 +15,9 @@ class ProfileFlowContext: ObservableObject {
 
   @Published var username: String = ""
   @Published var avatar: String = ""
+  @Published var selectedImage: UIImage = UIImage()
 
+  private var bag = Set<AnyCancellable>()
   private var user: AuthUser
   private var profileProvider: ProfileProvider
 
@@ -24,6 +26,12 @@ class ProfileFlowContext: ObservableObject {
     self.profileProvider = profileProvider
     self.username = user.name ?? ""
     self.avatar = user.avatar ?? ""
+    
+    $selectedImage.removeDuplicates().sink { image in
+      Task {  [weak self] in
+        await self?.updateAvatar(to: image)
+      }
+    }.store(in: &bag)
   }
 
   var avatarImage: UIImage {

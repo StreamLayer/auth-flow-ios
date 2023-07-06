@@ -13,7 +13,6 @@ let package = Package(
   dependencies: [
     .package(url: "https://github.com/MojtabaHs/iPhoneNumberField.git", from: "0.10.1"),
     .package(url: "https://github.com/siteline/SwiftUI-Introspect.git", from: "0.2.3"),
-    .package(url: "https://github.com/exyte/MediaPicker.git", from: "1.2.3"),
     .package(url: "https://github.com/vpeschenkov/LetterAvatarKit.git", from: "1.2.5")
   ],
   targets: [
@@ -22,7 +21,6 @@ let package = Package(
       dependencies: [
         .product(name: "iPhoneNumberField", package: "iPhoneNumberField"),
         .product(name: "Introspect", package: "SwiftUI-Introspect"),
-        .product(name: "ExyteMediaPicker", package: "MediaPicker"),
         .product(name: "LetterAvatarKit", package: "LetterAvatarKit")
       ], resources: [
         .process("Resources")

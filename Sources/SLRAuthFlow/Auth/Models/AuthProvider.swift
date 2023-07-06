@@ -7,6 +7,10 @@
 
 import Foundation
 
+enum TestError: Error {
+  case testError
+}
+
 extension Task where Success == Never, Failure == Never {
     static func sleep(seconds: Double) async throws {
         let duration = UInt64(seconds * 1_000_000_000)
@@ -26,18 +30,22 @@ public class AuthProviderMock: AuthProvider {
 
   public func requestOTP(phoneNumber: String) async throws {
     print("[AuthProvider] requestOTP(phoneNumber:)")
-    try await Task.sleep(seconds: 2.0)
+    try await Task.sleep(seconds: 1.0)
   }
 
   public func authenticate(phoneNumber: String, code: String) async throws -> AuthUser {
     print("[AuthProvider] authenticate(phoneNumber:)")
-    try await Task.sleep(seconds: 2.0)
+    if code != "1111" {
+      throw TestError.testError
+    }
+    try await Task.sleep(seconds: 1.0)
+    
     return AuthUser.test()
   }
 
   public func setUserName(_ name: String) async throws {
     print("[AuthProvider] setUserName(:)")
-    try await Task.sleep(seconds: 2.0)
+    try await Task.sleep(seconds: 1.0)
   }
 
 }
