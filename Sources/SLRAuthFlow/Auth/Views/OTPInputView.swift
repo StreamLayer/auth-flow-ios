@@ -8,8 +8,6 @@
 import SwiftUI
 
 struct OTPInputView: View {
-  @State var text: String = ""
-  @State var isEditing: Bool = false
   @State var navigationPerformed: Bool = false
 
   @ObservedObject var authFlowContext: AuthFlowContext
@@ -34,7 +32,9 @@ struct OTPInputView: View {
           }
           activityIndicator
         }
+        .background(Color.black)
       }
+      .background(Color.black)
       VStack {
         Spacer()
         resendContainer
